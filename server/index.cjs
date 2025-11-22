@@ -219,7 +219,34 @@ io.on('connection', (socket) => {
     });
 });
 
-const PORT = 3000;
+const path = require('path');
+
+// ... existing code ...
+
+app.use(cors());
+app.use(express.json());
+
+// Serve static files from the React app
+const distPath = path.join(__dirname, '../dist');
+app.use(express.static(distPath));
+
+// --- API Endpoints ---
+
+// ... existing API endpoints ...
+
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get('*', (req, res) => {
+    // Check if it's an API request to avoid returning HTML for 404 APIs
+    if (req.path.startsWith('/api')) {
+        return res.status(404).json({ error: 'Not Found' });
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+});
+
+// ... Socket.io ...
+
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
