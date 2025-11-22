@@ -236,7 +236,9 @@ app.use(express.static(distPath));
 
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
-app.get('*', (req, res) => {
+// The "catchall" handler: for any request that doesn't
+// match one above, send back React's index.html file.
+app.get(/(.*)/, (req, res) => {
     // Check if it's an API request to avoid returning HTML for 404 APIs
     if (req.path.startsWith('/api')) {
         return res.status(404).json({ error: 'Not Found' });
